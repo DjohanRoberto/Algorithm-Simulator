@@ -14,12 +14,16 @@ public class GridWorld {
     public int x;
     public int y;
     public Position start;
+    public Position playerPos;
+    public Agent player;
 
     public int[][] grid;
 
     public GridWorld(int x, int y, Position start, Position goal, Position [] walls) {
         this.x = x;
         this.y = y;
+        this.start = start;
+        this.playerPos = start;
         this.grid = new int[x][y];
         for (int i = 0; i < x; i ++) {
             for (int j = 0; j < y; j++) {
@@ -53,7 +57,30 @@ public class GridWorld {
         }
     }
 
-    public void changeStart() {
+    // change start position of the agent and places agent there
+    // sets prev start to empty
+    public void changeStart(Position newStart) {
+        this.grid[this.start.x][this.start.y] = 0;
+        this.start = newStart;
+        this.playerPos = newStart;
+        this.grid[this.start.x][this.start.y] = 3;
+    }
 
+    // moves player to new position by adding x and y to current player position
+    // sets previous player position to empty
+    public void movePlayer(int x , int y) {
+        this.grid[this.playerPos.x][this.playerPos.y] = 0;
+        this.playerPos = new Position(this.playerPos.x + x, this.playerPos.y + y);
+        this.grid[this.playerPos.x][this.playerPos.y] = 3;
+    }
+
+    // resets all walls to empty and relocate player to starting position
+    public void resetGrid() {
+        for (int i = 0 ; i < this.x; i++) {
+            for (int j = 0; j < this.y; j++) {
+                this.grid[i][j] = 0;
+            }
+        }
+        this.grid[this.start.x][this.start.y] = 3;
     }
 }
