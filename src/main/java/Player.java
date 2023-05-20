@@ -1,8 +1,11 @@
 package main.java;
+
+import main.java.Algorithms.Algorithm;
+
 public class Player {
 
+    private Algorithm alg = null;
     private Position pos;
-    private Algorithm alg;
 
     public Player(Position pos, Algorithm alg) {
         this.pos = pos;
@@ -13,14 +16,16 @@ public class Player {
         return this.pos;
     }
 
-    // moves the player to a specified new position
-    public void setPos(Position newPosition) {
-        this.pos = newPosition;
+    public void setAlg(Algorithm alg) {
+        this.alg = alg; 
+    }
+    
+    public void setPos(Position newPos) {
+        this.pos = newPos;
     }
 
     // move the player by translating by the given value on x and y
     public void doMove(int x, int y) {
-        this.pos.setX(this.pos.getX() + x);
-        this.pos.setY(this.pos.getY() + y);
+
     }
 }

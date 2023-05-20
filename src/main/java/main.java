@@ -1,6 +1,12 @@
 package main.java;
-public class main {
+
+import main.java.JFrame.MainFrame;
+
+public class Main {
     public static void main(String[] args) {
+
+        MainFrame main = new MainFrame();
+
         
     }
 }

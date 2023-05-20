@@ -24,4 +24,9 @@ public class Position {
     public void setY(int y) {
         this.y = y;
     }
+
+    public void move(int x, int y) {
+        this.setX(x);
+        this.setY(y);
+    }
 }
