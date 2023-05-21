@@ -3,27 +3,32 @@ package main.java.JFrame;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.border.Border;
 
-import main.java.Position;
 import main.java.GridWorld;
 
-public class MainFrame {
-    public MainFrame() {
-        JFrame main = new JFrame();
-        main.setSize(500, 500);
-        main.getContentPane().setBackground(new Color(200, 200, 200));
-        main.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        main.setLayout(new BorderLayout());
+public class MainFrame extends JFrame implements MouseListener{
+
+    private boolean mouseDown = false;
+    private boolean isWall;
+    private GridWorld grid;
+
+    public MainFrame(GridWorld grid) {
+        this.grid = grid;
+        this.setSize(500, 500);
+        this.getContentPane().setBackground(new Color(200, 200, 200));
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setLayout(new BorderLayout());
 
         JPanel north = new JPanel();
         north.setBackground(Color.red);
-        north.setPreferredSize(new Dimension(100, 50));
+        north.setPreferredSize(new Dimension(100, 30));
 
         JPanel south = new JPanel();
         south.setBackground(Color.blue);
@@ -44,21 +49,74 @@ public class MainFrame {
         JLabel title = new JLabel("Algorithm Simulator");
         north.add(title);
 
+        // adding grid
+        center.setLayout(new GridLayout(this.grid.height, this.grid.width, 1, 1));
+        center.setBackground(Color.gray);
 
-        main.add(north, BorderLayout.NORTH);
-        main.add(south, BorderLayout.SOUTH);
-        main.add(east, BorderLayout.EAST);
-        main.add(west, BorderLayout.WEST);
-        main.add(center, BorderLayout.CENTER);
+        GridElement [][] gridPanels = new GridElement[this.grid.height][this.grid.width];
 
+        for (int i = 0; i < this.grid.width; i++) {
+            for (int j = 0; j < this.grid.height; j++) {
+                gridPanels[i][j] = new GridElement(i, j, this.grid.grid[i][j]);
+                gridPanels[i][j].addMouseListener(this);
+                center.add(gridPanels[i][j]);
+            }
+        }
 
-        main.setVisible(true);
+        this.add(north, BorderLayout.NORTH);
+        this.add(south, BorderLayout.SOUTH);
+        this.add(east, BorderLayout.EAST);
+        this.add(west, BorderLayout.WEST);
+        this.add(center, BorderLayout.CENTER);
+
+        this.setVisible(true);
     }
 
-    public void initGrid() {
-        Position start =  new Position(0, 0);
-        Position goal = new Position(4, 1);
-        Position [] walls = null;
-        GridWorld grid = new GridWorld(5, 5, start, goal, walls, null);
+    @Override
+    public void mouseClicked(MouseEvent e) {
+
     }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        mouseDown = true;
+        GridElement element = (GridElement) e.getSource();
+        if (element.getBackground() == Color.white) {
+            isWall = false;
+            element.setBackground(Color.black);
+            this.grid.placeWall(element.cords);
+        } else if (element.getBackground() == Color.black) {
+            isWall = true;
+            element.setBackground((Color.white));
+            this.grid.removeWall(element.cords);
+        }
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        // TODO Auto-generated method stub
+        mouseDown = false;
+        this.grid.printGrid();
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+        // TODO Auto-generated method stub
+        GridElement element = (GridElement) e.getSource();
+        if (mouseDown) {
+            if (element.getBackground() == Color.white && !isWall) {
+                element.setBackground(Color.black);
+                grid.placeWall(element.cords);
+            } else if (element.getBackground() == Color.black && isWall) {
+                element.setBackground((Color.white));
+                grid.removeWall(element.cords);
+            }
+        }
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+        // TODO Auto-generated method stub
+    }
+    
 }

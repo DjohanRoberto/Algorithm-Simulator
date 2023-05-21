@@ -14,18 +14,18 @@ import main.java.Algorithms.Algorithm;
  */
 public class GridWorld {
     
-    public int x;
-    public int y;
+    public int width;
+    public int height;
     public Position start;
     public Player player;
 
     public int[][] grid;
 
-    public GridWorld(int x, int y, Position start, Position goal, Position [] walls, Algorithm alg) {
-        this.x = x;
-        this.y = y;
+    public GridWorld(int width, int height, Position start, Position goal, Position [] walls, Algorithm alg) {
+        this.width = width;
+        this.height = height;
         this.start = start;
-        this.grid = new int[x][y];
+        this.grid = new int[width][height];
         this.player = new Player(start, alg);
         
         this.initGrid();
@@ -45,8 +45,8 @@ public class GridWorld {
     // initialise the grid to all 0
     public void initGrid() {
         // initialise grid as all zero
-        for (int i = 0; i < this.x; i ++) {
-            for (int j = 0; j < this.y; j++) {
+        for (int i = 0; i < this.width; i ++) {
+            for (int j = 0; j < this.height; j++) {
                 this.grid[i][j] = 0;
             }
         }
@@ -54,8 +54,8 @@ public class GridWorld {
 
     // changes and reinitialises grid
     public void changeDimensions(int x, int y) {
-        this.x = x;
-        this.y = y;
+        this.width = x;
+        this.height = y;
         this.initGrid();
     }
 
@@ -90,12 +90,23 @@ public class GridWorld {
 
     // resets all walls to empty and relocate player to starting position
     public void resetGrid() {
-        for (int i = 0 ; i < this.x; i++) {
-            for (int j = 0; j < this.y; j++) {
+        for (int i = 0 ; i < this.width; i++) {
+            for (int j = 0; j < this.height; j++) {
                 this.grid[i][j] = 0;
             }
         }
         this.grid[this.start.getX()][this.start.getY()] = 3;
         this.player.setPos(this.start);
+    }
+
+    // development function to check grid
+    public void printGrid() {
+        for (int i = 0; i < this.height; i++) {
+            for (int j = 0; j < this.width; j++) {
+                System.out.print(this.grid[i][j]);
+            }
+            System.out.println();
+        }
+        System.out.println("------------------------");
     }
 }
