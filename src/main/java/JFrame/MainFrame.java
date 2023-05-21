@@ -7,17 +7,22 @@ import java.awt.GridLayout;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import javax.swing.border.Border;
 
 import main.java.GridWorld;
+import main.java.Position;
 
 public class MainFrame extends JFrame implements MouseListener{
 
     private boolean mouseDown = false;
     private boolean isWall;
     private GridWorld grid;
+    private GridElement [][] gridPanels;
 
     public MainFrame(GridWorld grid) {
         this.grid = grid;
@@ -26,34 +31,41 @@ public class MainFrame extends JFrame implements MouseListener{
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLayout(new BorderLayout());
 
+        Border border = BorderFactory.createLineBorder(Color.black, 2);
+
         JPanel north = new JPanel();
-        north.setBackground(Color.red);
+        north.setBackground(new Color(200, 200, 200));
         north.setPreferredSize(new Dimension(100, 30));
+        north.setBorder(border);
 
         JPanel south = new JPanel();
         south.setBackground(Color.blue);
         south.setPreferredSize(new Dimension(100, 100));
+        south.setBorder(border);
 
         JPanel east = new JPanel();
-        east.setBackground(Color.yellow);
+        east.setBackground(new Color(220, 220, 220));
         east.setPreferredSize(new Dimension(50, 100));
+        east.setBorder(border);
 
         JPanel west = new JPanel();
-        west.setBackground(Color.green);
+        west.setBackground(new Color(220, 220, 220));
         west.setPreferredSize(new Dimension(50, 100));
+        west.setBorder(border);
 
         JPanel center = new JPanel();
         center.setBackground(new Color(230, 230, 230));
         center.setPreferredSize(new Dimension(100, 100));
+        center.setBorder(border);
 
         JLabel title = new JLabel("Algorithm Simulator");
         north.add(title);
 
         // adding grid
-        center.setLayout(new GridLayout(this.grid.height, this.grid.width, 1, 1));
+        center.setLayout(new GridLayout(this.grid.height, this.grid.width));
         center.setBackground(Color.gray);
 
-        GridElement [][] gridPanels = new GridElement[this.grid.height][this.grid.width];
+        this.gridPanels = new GridElement[this.grid.height][this.grid.width];
 
         for (int i = 0; i < this.grid.width; i++) {
             for (int j = 0; j < this.grid.height; j++) {
@@ -79,17 +91,27 @@ public class MainFrame extends JFrame implements MouseListener{
 
     @Override
     public void mousePressed(MouseEvent e) {
-        mouseDown = true;
         GridElement element = (GridElement) e.getSource();
-        if (element.getBackground() == Color.white) {
-            isWall = false;
-            element.setBackground(Color.black);
-            this.grid.placeWall(element.cords);
-        } else if (element.getBackground() == Color.black) {
-            isWall = true;
-            element.setBackground((Color.white));
-            this.grid.removeWall(element.cords);
-        }
+        if (SwingUtilities.isRightMouseButton(e)) {
+            // change start position
+            Position startPos = this.grid.start;
+
+            this.gridPanels[startPos.getX()][startPos.getY()].setBackground(Color.white);
+            this.grid.changeStart(element.cords);
+            this.gridPanels[element.cords.getX()][element.cords.getY()].setBackground(Color.red);
+
+        } else {
+            mouseDown = true;
+            if (element.getBackground() == Color.white) {
+                isWall = false;
+                element.setBackground(Color.black);
+                this.grid.placeWall(element.cords);
+            } else if (element.getBackground() == Color.black) {
+                isWall = true;
+                element.setBackground((Color.white));
+                this.grid.removeWall(element.cords);
+            }
+        }    
     }
 
     @Override

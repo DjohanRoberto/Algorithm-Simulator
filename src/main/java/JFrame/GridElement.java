@@ -1,17 +1,22 @@
 package main.java.JFrame;
 
 import java.awt.Color;
+
+import javax.swing.BorderFactory;
 import javax.swing.JPanel;
+import javax.swing.border.Border;
 
 import main.java.Position;
 
 public class GridElement extends JPanel{
     
     public Position cords;
+    Border border = BorderFactory.createLineBorder(Color.gray, 1);
 
     public GridElement(int i, int j, int value) {
         this.cords = new Position(i , j);
         this.setPanelColor(value);
+        this.setBorder(border);
     }
 
 
