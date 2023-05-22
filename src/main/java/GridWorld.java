@@ -30,7 +30,6 @@ public class GridWorld {
         Algorithm alg = new BFS();
         this.player = new Player(start, alg);
         
-        
         // put player in start position
         this.grid[start.getX()][start.getY()] = 3;
         // initialise goal
@@ -46,7 +45,7 @@ public class GridWorld {
     // initialise the grid to all 0
     public void initGrid() {
         this.start = new Position(1, 1);
-        this.goal = new Position(this.width - 2, this.height - 2);
+        this.goal = new Position(this.height - 2, this.width - 2);
         this.grid = new int[this.height][this.width];
         // initialise grid as all zero
         for (int i = 0; i < this.height; i ++) {
