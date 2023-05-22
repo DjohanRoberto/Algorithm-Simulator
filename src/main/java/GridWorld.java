@@ -53,6 +53,8 @@ public class GridWorld {
                 this.grid[i][j] = 0;
             }
         }
+        this.grid[this.start.getX()][this.start.getY()] = 3;
+        this.grid[this.goal.getX()][this.goal.getY()] = 2;
     }
 
     // changes and reinitialises grid
@@ -78,13 +80,27 @@ public class GridWorld {
         }
     }
 
+    // resets start
+    public void resetStart() {
+        this.grid[this.start.getX()][this.start.getY()] = 0;
+        this.start = null;
+    }
+
     // change start position of the agent and places agent there
     // sets prev start to empty
     public void changeStart(Position newStart) {
-        this.grid[this.start.getX()][this.start.getY()] = 0;
+        if (this.start != null) {
+            this.grid[this.start.getX()][this.start.getY()] = 0;
+        }
         this.start = newStart;
         this.player.setPos(newStart);
         this.grid[newStart.getX()][newStart.getY()] = 3;
+    }
+
+    public void changeGoal(Position newGoal) {
+        this.grid[this.goal.getX()][this.goal.getY()] = 0;
+        this.goal = newGoal;
+        this.grid[newGoal.getX()][newGoal.getY()] = 2;
     }
 
     public Player getPlayer() {

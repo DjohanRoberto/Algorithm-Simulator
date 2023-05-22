@@ -43,6 +43,7 @@ public class MainFrame extends JFrame implements MouseListener, ActionListener{
 
     private boolean mouseDown = false;
     private boolean isWall;
+    private boolean isGoal = false;
     private GridWorld grid;
     private GridElement [][] gridPanels;
 
@@ -112,6 +113,8 @@ public class MainFrame extends JFrame implements MouseListener, ActionListener{
         changeDimensionWindow = new JButton("Change Grid Dimensions", null);
         changeDimensionWindow.addActionListener(this);
         west.add(changeDimensionWindow);
+
+        // change goal
     }
 
     private void initGridPanels() {
@@ -167,7 +170,7 @@ public class MainFrame extends JFrame implements MouseListener, ActionListener{
     @Override
     public void mousePressed(MouseEvent e) {
         GridElement element = (GridElement) e.getSource();
-        if (SwingUtilities.isRightMouseButton(e)) {
+        if (SwingUtilities.isRightMouseButton(e) && element.getBackground() != Color.green) {
             // change start position
             Position startPos = this.grid.start;
 
@@ -185,6 +188,8 @@ public class MainFrame extends JFrame implements MouseListener, ActionListener{
                 isWall = true;
                 element.setBackground((Color.white));
                 this.grid.removeWall(element.cords);
+            } else if (element.getBackground() == Color.green) {
+                isGoal = true;
             }
         }    
     }
@@ -193,6 +198,29 @@ public class MainFrame extends JFrame implements MouseListener, ActionListener{
     public void mouseReleased(MouseEvent e) {
         // TODO Auto-generated method stub
         mouseDown = false;
+        if (isGoal) {
+            GridElement element = null;
+            int count = 0;
+            for (int i = 0; i < this.grid.height; i++) {
+                for (int j = 0; j < this.grid.width; j++) {
+                    if (this.gridPanels[i][j].getBackground() == Color.green) {
+                        element = this.gridPanels[i][j];
+                        count++;
+                    }
+                }
+            }
+            // some possible error cases just in case
+            if (count > 1) {
+                JOptionPane.showMessageDialog(null, "There is more than 1 goal in the grid", "Goal error", JOptionPane.ERROR_MESSAGE);
+            } 
+            if (element == null) {
+                JOptionPane.showMessageDialog(null, "No goals were found in the grid", "Goal error", JOptionPane.ERROR_MESSAGE);
+            }
+
+            System.out.println(element.cords.getX() + " " + element.cords.getY());
+            this.grid.changeGoal(element.cords);
+        }
+        isGoal = false;
         this.grid.printGrid();
     }
 
@@ -201,19 +229,34 @@ public class MainFrame extends JFrame implements MouseListener, ActionListener{
         // TODO Auto-generated method stub
         GridElement element = (GridElement) e.getSource();
         if (mouseDown) {
-            if (element.getBackground() == Color.white && !isWall) {
+            if (element.getBackground() == Color.white && !isWall && !isGoal) {
                 element.setBackground(Color.black);
                 grid.placeWall(element.cords);
-            } else if (element.getBackground() == Color.black && isWall) {
+            } else if (element.getBackground() == Color.black && isWall && !isGoal) {
                 element.setBackground((Color.white));
                 grid.removeWall(element.cords);
+            } else if (isGoal) {
+                if (element.getBackground() == Color.black) {
+                    this.grid.removeWall(element.cords);
+                }
+                if (element.getBackground() == Color.red) {
+                    JOptionPane.showMessageDialog(null, "Cannot replace player with goal", "Error", JOptionPane.ERROR_MESSAGE);
+                    isGoal = false;
+                    mouseDown = false;
+                    this.gridPanels[this.grid.goal.getX()][this.grid.goal.getY()].setBackground(Color.green);
+                } else {
+                    element.setBackground(Color.green);
+                }
             }
         }
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
-        // TODO Auto-generated method stub
+        GridElement element = (GridElement) e.getSource();
+        if (mouseDown && isGoal) {
+            element.setBackground(Color.white);
+        }
     }
 
     // ------------------------- ActionListener ------------------------------
