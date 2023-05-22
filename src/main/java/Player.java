@@ -16,12 +16,20 @@ public class Player {
         return this.pos;
     }
 
+    public Algorithm getAlg() {
+        return this.alg;
+    }
+
     public void setAlg(Algorithm alg) {
         this.alg = alg; 
     }
     
     public void setPos(Position newPos) {
         this.pos = newPos;
+    }
+
+    public void findPath(GridWorld grid) {
+        alg.findPath(grid);
     }
 
     // move the player by translating by the given value on x and y

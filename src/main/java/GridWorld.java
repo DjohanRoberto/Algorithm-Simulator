@@ -1,6 +1,7 @@
 package main.java;
 
 import main.java.Algorithms.Algorithm;
+import main.java.Algorithms.BFS;
 
 /*
  * Simulation Environment
@@ -17,45 +18,48 @@ public class GridWorld {
     public int width;
     public int height;
     public Position start;
-    public Player player;
+    public Position goal;
+    private Player player;
 
     public int[][] grid;
 
-    public GridWorld(int width, int height, Position start, Position goal, Position [] walls, Algorithm alg) {
+    public GridWorld(int width, int height) {
         this.width = width;
         this.height = height;
-        this.start = start;
-        this.grid = new int[width][height];
+        this.initGrid();
+        Algorithm alg = new BFS();
         this.player = new Player(start, alg);
         
-        this.initGrid();
         
         // put player in start position
         this.grid[start.getX()][start.getY()] = 3;
         // initialise goal
         this.grid[goal.getX()][goal.getY()] = 2;
-        // place walls on the map
-        if (walls != null) {
-            for (Position wall : walls) {
-                grid[wall.getX()][wall.getY()] = 1;
-            }
-        }
+        // // place walls on the map
+        // if (walls != null) {
+        //     for (Position wall : walls) {
+        //         grid[wall.getX()][wall.getY()] = 1;
+        //     }
+        // }
     }
 
     // initialise the grid to all 0
     public void initGrid() {
+        this.start = new Position(1, 1);
+        this.goal = new Position(this.width - 2, this.height - 2);
+        this.grid = new int[this.height][this.width];
         // initialise grid as all zero
-        for (int i = 0; i < this.width; i ++) {
-            for (int j = 0; j < this.height; j++) {
+        for (int i = 0; i < this.height; i ++) {
+            for (int j = 0; j < this.width; j++) {
                 this.grid[i][j] = 0;
             }
         }
     }
 
     // changes and reinitialises grid
-    public void changeDimensions(int x, int y) {
-        this.width = x;
-        this.height = y;
+    public void changeDimensions(int width, int height) {
+        this.width = width;
+        this.height = height;
         this.initGrid();
     }
 
@@ -84,19 +88,28 @@ public class GridWorld {
         this.grid[newStart.getX()][newStart.getY()] = 3;
     }
 
+    public Player getPlayer() {
+        return this.player;
+    }
+
     public Position playerPos() {
         return this.player.getPos();
     }
 
     // resets all walls to empty and relocate player to starting position
     public void resetGrid() {
-        for (int i = 0 ; i < this.width; i++) {
-            for (int j = 0; j < this.height; j++) {
+        for (int i = 0 ; i < this.height; i++) {
+            for (int j = 0; j < this.width; j++) {
                 this.grid[i][j] = 0;
             }
         }
         this.grid[this.start.getX()][this.start.getY()] = 3;
         this.player.setPos(this.start);
+    }
+
+    // find path
+    public void findPath() {
+        this.player.findPath(this);
     }
 
     // development function to check grid

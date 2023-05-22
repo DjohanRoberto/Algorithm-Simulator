@@ -2,22 +2,44 @@ package main.java.JFrame;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 
 import main.java.GridWorld;
 import main.java.Position;
 
-public class MainFrame extends JFrame implements MouseListener{
+import main.java.Algorithms.BFS;
+import main.java.Algorithms.DFS;
+import main.java.Algorithms.Dijkstra;
+import main.java.Algorithms.RandomWalk;
+import main.java.Algorithms.MST;
+
+public class MainFrame extends JFrame implements MouseListener, ActionListener{
+
+    JComboBox algChoose;
+    JButton findPathButton;
+    JButton changeDimensionWindow;
+    JPanel center;
+    JPanel south;
 
     private boolean mouseDown = false;
     private boolean isWall;
@@ -26,67 +48,120 @@ public class MainFrame extends JFrame implements MouseListener{
 
     public MainFrame(GridWorld grid) {
         this.grid = grid;
-        this.setSize(500, 500);
+        this.setSize(900, 700);
         this.getContentPane().setBackground(new Color(200, 200, 200));
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLayout(new BorderLayout());
 
-        Border border = BorderFactory.createLineBorder(Color.black, 2);
+        Border border = BorderFactory.createLineBorder(Color.black, 1);
 
         JPanel north = new JPanel();
         north.setBackground(new Color(200, 200, 200));
-        north.setPreferredSize(new Dimension(100, 30));
+        north.setPreferredSize(new Dimension(100, 40));
         north.setBorder(border);
 
-        JPanel south = new JPanel();
-        south.setBackground(Color.blue);
-        south.setPreferredSize(new Dimension(100, 100));
+        south = new JPanel();
+        south.setBackground(new Color(200, 200, 200));
+        south.setPreferredSize(new Dimension(100, 150));
         south.setBorder(border);
 
-        JPanel east = new JPanel();
-        east.setBackground(new Color(220, 220, 220));
-        east.setPreferredSize(new Dimension(50, 100));
-        east.setBorder(border);
+        // JPanel east = new JPanel();
+        // east.setBackground(new Color(220, 220, 220));
+        // east.setPreferredSize(new Dimension(50, 100));
+        // east.setBorder(border);
 
         JPanel west = new JPanel();
-        west.setBackground(new Color(220, 220, 220));
-        west.setPreferredSize(new Dimension(50, 100));
+        west.setBackground(new Color(200, 200, 200));
+        west.setPreferredSize(new Dimension(200, 100));
         west.setBorder(border);
 
-        JPanel center = new JPanel();
-        center.setBackground(new Color(230, 230, 230));
+        center = new JPanel();
         center.setPreferredSize(new Dimension(100, 100));
         center.setBorder(border);
 
         JLabel title = new JLabel("Algorithm Simulator");
+        title.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 20));
         north.add(title);
 
+        // choose algorithm
+        String[] algs = {"BFS", "DFS", "Dijkstra", "Random Walk","MST"};
+        algChoose = new JComboBox<>(algs);
+        algChoose.addActionListener(this);
+
+        south.add(algChoose);
+
         // adding grid
-        center.setLayout(new GridLayout(this.grid.height, this.grid.width));
         center.setBackground(Color.gray);
+        this.initGridPanels();
+
+        // find path button
+        findPathButton = new JButton("Find Path");
+        findPathButton.addActionListener(this);
+        south.add(findPathButton);
+        
+
+        this.add(north, BorderLayout.NORTH);
+        this.add(south, BorderLayout.SOUTH);
+        // this.add(east, BorderLayout.EAST);
+        this.add(west, BorderLayout.WEST);
+        this.add(center, BorderLayout.CENTER);
+
+        this.setVisible(true);
+
+        // change dimension
+        changeDimensionWindow = new JButton("Change Grid Dimensions", null);
+        changeDimensionWindow.addActionListener(this);
+        west.add(changeDimensionWindow);
+    }
+
+    private void initGridPanels() {
+
+        center.removeAll();
+        center.revalidate();
+        center.repaint();
+
+        center.setLayout(new GridLayout(this.grid.height, this.grid.width));
 
         this.gridPanels = new GridElement[this.grid.height][this.grid.width];
-
-        for (int i = 0; i < this.grid.width; i++) {
-            for (int j = 0; j < this.grid.height; j++) {
+        for (int i = 0; i < this.grid.height; i++) {
+            for (int j = 0; j < this.grid.width; j++) {
                 gridPanels[i][j] = new GridElement(i, j, this.grid.grid[i][j]);
                 gridPanels[i][j].addMouseListener(this);
                 center.add(gridPanels[i][j]);
             }
         }
-
-        this.add(north, BorderLayout.NORTH);
-        this.add(south, BorderLayout.SOUTH);
-        this.add(east, BorderLayout.EAST);
-        this.add(west, BorderLayout.WEST);
-        this.add(center, BorderLayout.CENTER);
-
-        this.setVisible(true);
+        this.gridPanels[this.grid.start.getX()][this.grid.start.getY()].setBackground(Color.red);
+        this.gridPanels[this.grid.goal.getX()][this.grid.goal.getY()].setBackground(Color.green);
     }
 
+    private void initChangeDimensionWindow() {
+        JSpinner width = new JSpinner();
+        JSpinner height = new JSpinner();
+
+        Object[] message = {
+            "Width", width,
+            "Height", height,
+            "Min = 4, Max = 30"
+        };
+
+        int option = JOptionPane.showConfirmDialog(this, message, "Change Dimensions", JOptionPane.OK_CANCEL_OPTION);
+        if (option == JOptionPane.OK_OPTION) {
+            int w = (int) width.getValue();
+            int h = (int) height.getValue();
+
+            if ((w > 3 && w <= 30) && (h > 3 && h <= 30)) {
+                this.grid.changeDimensions(w, h);
+                initGridPanels();
+            } else {
+                JOptionPane.showMessageDialog(this, "The numbers you entered are out of range", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    // ------------------------- MouseListener Functions ------------------------------
     @Override
     public void mouseClicked(MouseEvent e) {
-
+        
     }
 
     @Override
@@ -140,5 +215,44 @@ public class MainFrame extends JFrame implements MouseListener{
     public void mouseExited(MouseEvent e) {
         // TODO Auto-generated method stub
     }
-    
+
+    // ------------------------- ActionListener ------------------------------
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        // choosing alg
+        if (e.getSource() == algChoose) {
+            String choice = (String) algChoose.getSelectedItem();
+
+            if (choice == "BFS") {
+                this.grid.getPlayer().setAlg(new BFS());
+            }
+
+            if (choice == "DFS") {
+                this.grid.getPlayer().setAlg(new DFS());
+            }
+
+            if (choice == "Dijkstra") {
+                this.grid.getPlayer().setAlg(new Dijkstra());
+            }
+
+            if (choice == "Random Walk") {
+                this.grid.getPlayer().setAlg(new RandomWalk());
+            }
+
+            if (choice == "MST") {
+                this.grid.getPlayer().setAlg(new MST());
+            }
+            
+
+        }
+        // find path button
+        if (e.getSource() == findPathButton) {
+            this.grid.findPath();
+
+        }
+        // change dimension button
+        if (e.getSource() == changeDimensionWindow) {
+            initChangeDimensionWindow();
+        }
+    }
 }
