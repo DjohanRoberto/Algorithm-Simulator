@@ -38,12 +38,14 @@ public class MainFrame extends JFrame implements MouseListener, ActionListener{
     JComboBox algChoose;
     JButton findPathButton;
     JButton changeDimensionWindow;
+    JButton showCordsButton;
     JPanel center;
     JPanel south;
 
     private boolean mouseDown = false;
     private boolean isWall;
     private boolean isGoal = false;
+    private boolean showCords = false;
     private GridWorld grid;
     private GridElement [][] gridPanels;
 
@@ -99,7 +101,6 @@ public class MainFrame extends JFrame implements MouseListener, ActionListener{
         findPathButton = new JButton("Find Path");
         findPathButton.addActionListener(this);
         south.add(findPathButton);
-        
 
         this.add(north, BorderLayout.NORTH);
         this.add(south, BorderLayout.SOUTH);
@@ -114,9 +115,13 @@ public class MainFrame extends JFrame implements MouseListener, ActionListener{
         changeDimensionWindow.addActionListener(this);
         west.add(changeDimensionWindow);
 
-        // change goal
+        // show cords on grid
+        showCordsButton = new JButton("Show Coords");
+        showCordsButton.addActionListener(this);
+        south.add(showCordsButton);
     }
 
+    // initialises the grid panels
     private void initGridPanels() {
 
         center.removeAll();
@@ -135,8 +140,13 @@ public class MainFrame extends JFrame implements MouseListener, ActionListener{
         }
         this.gridPanels[this.grid.start.getX()][this.grid.start.getY()].setBackground(Color.red);
         this.gridPanels[this.grid.goal.getX()][this.grid.goal.getY()].setBackground(Color.green);
+
+        if (showCords) {
+            this.showCordsOnGrid();
+        }
     }
 
+    // changing the dimensions of the grid
     private void initChangeDimensionWindow() {
         JSpinner width = new JSpinner();
         JSpinner height = new JSpinner();
@@ -157,6 +167,20 @@ public class MainFrame extends JFrame implements MouseListener, ActionListener{
                 initGridPanels();
             } else {
                 JOptionPane.showMessageDialog(this, "The numbers you entered are out of range", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    // if show cords is on, then show the coordinates on each panel in the grid
+    public void showCordsOnGrid() {
+        for (GridElement [] row : this.gridPanels) {
+            for (GridElement element : row) {
+                int x = element.cords.getX();
+                int y = element.cords.getY();
+                JLabel cords = new JLabel("(" + x + ", " + y + ")");
+                cords.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 15));
+                cords.setForeground(Color.black);
+                element.add(cords);
             }
         }
     }
@@ -296,6 +320,12 @@ public class MainFrame extends JFrame implements MouseListener, ActionListener{
         // change dimension button
         if (e.getSource() == changeDimensionWindow) {
             initChangeDimensionWindow();
+        }
+
+        // show cords
+        if (e.getSource() == showCordsButton) {
+            showCords = !showCords;
+            initGridPanels();
         }
     }
 }

@@ -29,4 +29,20 @@ public class Position {
         this.setX(x);
         this.setY(y);
     }
+
+    @Override
+    public final boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (obj.getClass() != getClass()) {
+            return false;
+        }
+        Position other = (Position) obj;
+
+        return (other.getX() == this.getX() && other.getY() == this.getY());
+    }
 }
