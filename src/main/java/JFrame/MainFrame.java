@@ -245,7 +245,7 @@ public class MainFrame extends JFrame implements MouseListener, ActionListener{
             this.grid.changeGoal(element.cords);
         }
         isGoal = false;
-        this.grid.printGrid();
+        // this.grid.printGrid();
     }
 
     @Override

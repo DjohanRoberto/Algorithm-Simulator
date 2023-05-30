@@ -45,4 +45,13 @@ public class Position {
 
         return (other.getX() == this.getX() && other.getY() == this.getY());
     }
+
+    public String toString() {
+        return "(" + this.x + ", " + this.y + ")";
+    }
+
+    @Override
+    public int hashCode() {
+        return (this.x * 10) + this.y ;
+    }
 }
