@@ -138,8 +138,9 @@ public class MainFrame extends JFrame implements MouseListener, ActionListener{
                 center.add(gridPanels[i][j]);
             }
         }
-        this.gridPanels[this.grid.start.getX()][this.grid.start.getY()].setBackground(Color.red);
-        this.gridPanels[this.grid.goal.getX()][this.grid.goal.getY()].setBackground(Color.green);
+        this.gridPanels[this.grid.goal.getX()][this.grid.goal.getY()].setPanelColor(3);
+        this.gridPanels[this.grid.goal.getX()][this.grid.goal.getY()].setPanelColor(2);
+
 
         if (showCords) {
             this.showCordsOnGrid();
@@ -198,9 +199,9 @@ public class MainFrame extends JFrame implements MouseListener, ActionListener{
             // change start position
             Position startPos = this.grid.start;
 
-            this.gridPanels[startPos.getX()][startPos.getY()].setBackground(Color.white);
+            this.gridPanels[startPos.getX()][startPos.getY()].setPanelColor(0);
             this.grid.changeStart(element.cords);
-            this.gridPanels[element.cords.getX()][element.cords.getY()].setBackground(Color.red);
+            this.gridPanels[element.cords.getX()][element.cords.getY()].setPanelColor(3);
 
         } else {
             mouseDown = true;
@@ -267,7 +268,7 @@ public class MainFrame extends JFrame implements MouseListener, ActionListener{
                     JOptionPane.showMessageDialog(null, "Cannot replace player with goal", "Error", JOptionPane.ERROR_MESSAGE);
                     isGoal = false;
                     mouseDown = false;
-                    this.gridPanels[this.grid.goal.getX()][this.grid.goal.getY()].setBackground(Color.green);
+                    this.gridPanels[this.grid.goal.getX()][this.grid.goal.getY()].setPanelColor(2);
                 } else {
                     element.setBackground(Color.green);
                 }

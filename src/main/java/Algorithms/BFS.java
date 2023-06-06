@@ -3,6 +3,7 @@ package main.java.Algorithms;
 import main.java.GridWorld;
 import main.java.Position;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -16,54 +17,50 @@ public class BFS implements Algorithm {
     public void findPath(GridWorld gridworld) {
         System.out.println("BFS Path");
 
-        Position start = gridworld.start;
-
-        int[][] grid = gridworld.grid;
-
-        // <node, prev>
-        Map<Position, Position> visited = new LinkedHashMap<>(); 
-        Queue<Position> queue = new LinkedList<>();
-        queue.add(start);
-
         boolean goalFound = false;
+
+        Position start = gridworld.start;
+        int[][] grid = gridworld.grid;
+        Position goal = null;
+
+        // node, prev
+        HashMap<Position, Position> visited = new LinkedHashMap<>();
+        Queue<Position> queue = new LinkedList<>();
+
+        queue.offer(start);
+        visited.put(start, null);
         
-        Position curr = null;
-
-        while (!queue.isEmpty() && !goalFound) {
-            Position prev = curr;
-            curr = queue.poll();
-
-            visited.put(curr, prev);
-            Position [] aroundCurr = AlgorithmHelper.getSurroundingBoxes(gridworld, curr);
-
-            if (grid[curr.getX()][curr.getY()] == 2) {
-                goalFound = true;
-            }
-
-            // adding surrounding positions to queue
-            for (Position p : aroundCurr) {
-                // if p is not null, a wall or already visited, then add to queue
-                if (p != null && grid[p.getX()][p.getY()] != 1 && !visited.containsKey(p)) {
-                    queue.add(p);
+        while(!queue.isEmpty() && !goalFound) {
+            Position curr = queue.poll();
+            
+            for (Position p : AlgorithmHelper.getSurroundingBoxes(gridworld, curr)) {
+                // if not null, not in visited, not a wall
+                if (p != null && !visited.containsKey(p) && grid[p.getX()][p.getY()] != 1 ) {
+                    if (grid[p.getX()][p.getY()] == 2) {
+                        visited.put(p,curr);
+                        goal = p;
+                        goalFound = true;
+                    }
+                    queue.offer(p);
+                    visited.put(p, curr);
                 }
             }
         }
-        for (Map.Entry<Position, Position> element : visited.entrySet()) {
-            Position node = element.getKey();
-            Position prev = element.getValue();
 
-            if (prev == null) {
-                System.out.println("(start) => " + node.toString());
-            } else {
-                System.out.println(prev.toString() + " => " + node.toString() + ", ");
+        // printing the path
+        // for (Map.Entry<Position, Position> p : visited.entrySet()) {
+        //     System.out.println(p.getKey() + " " + p.getValue());
+        // }
+
+        if (goal != null) {
+            System.out.println("Goal Found");
+            Position p = goal;
+            while (p != null) {
+                System.out.println(p);
+                p = visited.get(p);
             }
         }
-        if (goalFound) {
-            System.out.println("Goal Found");
-        } else {
-            System.out.println("Goal Not Fount");
-        }
-        // return visited;
-        // show final path to goal
     }
 }
+
+

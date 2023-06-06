@@ -24,7 +24,7 @@ public class GridElement extends JPanel{
     // 1 = wall
     // 2 = goal
     // 3 = player
-    private void setPanelColor(int value) {
+    public void setPanelColor(int value) {
         if (value == 0) {
             this.setBackground(Color.white);
         }
