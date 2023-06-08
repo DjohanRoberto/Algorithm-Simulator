@@ -3,6 +3,8 @@ package main.java.Algorithms;
 import main.java.GridWorld;
 import main.java.Position;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -37,7 +39,7 @@ public class BFS implements Algorithm {
                 // if not null, not in visited, not a wall
                 if (p != null && !visited.containsKey(p) && grid[p.getX()][p.getY()] != 1 ) {
                     if (grid[p.getX()][p.getY()] == 2) {
-                        visited.put(p,curr);
+                        visited.put(p,curr); // might need to deleted TODO
                         goal = p;
                         goalFound = true;
                     }
@@ -52,12 +54,19 @@ public class BFS implements Algorithm {
         //     System.out.println(p.getKey() + " " + p.getValue());
         // }
 
-        if (goal != null) {
+        if (goalFound && goal != null) {
             System.out.println("Goal Found");
             Position p = goal;
+            ArrayList<Position> result = new ArrayList<>();
+            System.out.println("Shortest path to goal: ");
             while (p != null) {
                 System.out.println(p);
+                result.add(p);
                 p = visited.get(p);
+            }
+            Collections.reverse(result);
+            for (Position pos : result) {
+                System.out.print(pos + " -> ");
             }
         }
     }
